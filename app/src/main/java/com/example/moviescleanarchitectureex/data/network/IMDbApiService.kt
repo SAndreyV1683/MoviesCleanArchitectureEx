@@ -1,5 +1,6 @@
-package com.example.moviescleanarchitectureex
+package com.example.moviescleanarchitectureex.data.network
 
+import com.example.moviescleanarchitectureex.data.dto.MoviesSearchResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path

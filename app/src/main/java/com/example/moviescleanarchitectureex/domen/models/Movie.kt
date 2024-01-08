@@ -1,4 +1,4 @@
-package com.example.moviescleanarchitectureex
+package com.example.moviescleanarchitectureex.domen.models
 
 data class Movie(val id: String,
                  val resultType: String,

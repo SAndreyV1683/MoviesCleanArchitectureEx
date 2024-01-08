@@ -1,4 +1,4 @@
-package com.example.moviescleanarchitectureex
+package com.example.moviescleanarchitectureex.ui.movies
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -14,6 +14,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.moviescleanarchitectureex.ui.poster.PosterActivity
+import com.example.moviescleanarchitectureex.R
+import com.example.moviescleanarchitectureex.data.dto.MoviesSearchResponse
+import com.example.moviescleanarchitectureex.data.network.IMDbApiService
+import com.example.moviescleanarchitectureex.domen.models.Movie
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
