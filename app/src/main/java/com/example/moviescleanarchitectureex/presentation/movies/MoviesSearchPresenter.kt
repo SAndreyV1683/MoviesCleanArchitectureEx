@@ -6,6 +6,7 @@ import android.os.Looper
 import com.example.moviescleanarchitectureex.R
 import com.example.moviescleanarchitectureex.domen.api.MoviesInteractor
 import com.example.moviescleanarchitectureex.domen.models.Movie
+import com.example.moviescleanarchitectureex.ui.models.MoviesState
 import com.example.moviescleanarchitectureex.util.Creator
 
 class MoviesSearchPresenter(
@@ -37,7 +38,7 @@ class MoviesSearchPresenter(
 
     private fun searchRequest(newSearchText: String) {
         if (newSearchText.isNotEmpty()) {
-            view.showLoading()
+            view.render(MoviesState.Loading)
 
             moviesInteractor.searchMovies(newSearchText, object : MoviesInteractor.MoviesConsumer {
                 override fun consume(foundMovies: List<Movie>?, message: String?) {
@@ -49,13 +50,26 @@ class MoviesSearchPresenter(
                         }
                         when  {
                             message != null -> {
-                                view.showError(context.getString(R.string.something_went_wrong))
-                                view.showToast(message)
+                                view.render(
+                                    MoviesState.Error(
+                                        message = context.getString(R.string.something_went_wrong)
+                                    )
+                                )
                             }
                             movies.isEmpty() -> {
-                                view.showEmpty(context.getString(R.string.nothing_found))
+                                view.render(
+                                    MoviesState.Empty(
+                                        message = context.getString(R.string.nothing_found)
+                                    )
+                                )
                             }
-                            else -> view.showContent(movies)
+                            else -> {
+                                view.render(
+                                    MoviesState.Content(
+                                        movies = movies
+                                    )
+                                )
+                            }
                         }
                     }
                 }
@@ -63,30 +77,6 @@ class MoviesSearchPresenter(
         }
     }
 
-/*    private fun showMessage(text: String, additionalMessage: String) {
-        if (text.isNotEmpty()) {
-            // Заменили работу с элементами UI на
-            // вызовы методов интерфейса
-            view.showPlaceholderMessage(true)
-            movies.clear()
-            view.updateMoviesList(movies)
-            // Добавили вызов метода MoviesView
-            view.changePlaceholderText(text)
-            if (additionalMessage.isNotEmpty()) {
-                view.showMessage(additionalMessage)
-            }
-        } else {
-            // Заменили работу с элементами UI на
-            // вызовы методов интерфейса
-            view.showPlaceholderMessage(false)
-        }
-    }
-
-    private fun hideMessage() {
-        // Заменили работу с элементами UI на
-        // вызовы методов интерфейса
-        view.showPlaceholderMessage(false)
-    }*/
 
     fun onDestroy() {
         handler.removeCallbacks(searchRunnable)

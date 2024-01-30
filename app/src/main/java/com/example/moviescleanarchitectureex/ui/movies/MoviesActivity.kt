@@ -18,6 +18,7 @@ import com.example.moviescleanarchitectureex.util.Creator
 import com.example.moviescleanarchitectureex.R
 import com.example.moviescleanarchitectureex.domen.models.Movie
 import com.example.moviescleanarchitectureex.presentation.movies.MoviesView
+import com.example.moviescleanarchitectureex.ui.models.MoviesState
 import com.example.moviescleanarchitectureex.ui.poster.PosterActivity
 
 class MoviesActivity : AppCompatActivity(), MoviesView {
@@ -90,13 +91,13 @@ class MoviesActivity : AppCompatActivity(), MoviesView {
         return current
     }
 
-    override fun showLoading() {
+    private fun showLoading() {
         moviesList.visibility = View.GONE
         placeholderMessage.visibility = View.GONE
         progressBar.visibility = View.VISIBLE
     }
 
-    override fun showError(errorMessage: String) {
+    private fun showError(errorMessage: String) {
         moviesList.visibility = View.GONE
         placeholderMessage.visibility = View.VISIBLE
         progressBar.visibility = View.GONE
@@ -104,11 +105,11 @@ class MoviesActivity : AppCompatActivity(), MoviesView {
         placeholderMessage.text = errorMessage
     }
 
-    override fun showEmpty(emptyMessage: String) {
+    private fun showEmpty(emptyMessage: String) {
         showError(emptyMessage)
     }
 
-    override fun showContent(movies: List<Movie>) {
+    private fun showContent(movies: List<Movie>) {
         moviesList.visibility = View.VISIBLE
         placeholderMessage.visibility = View.GONE
         progressBar.visibility = View.GONE
@@ -116,6 +117,15 @@ class MoviesActivity : AppCompatActivity(), MoviesView {
         adapter.movies.clear()
         adapter.movies.addAll(movies)
         adapter.notifyDataSetChanged()
+    }
+
+    override fun render(state: MoviesState) {
+        when (state) {
+            is MoviesState.Loading -> showLoading()
+            is MoviesState.Content -> showContent(state.movies)
+            is MoviesState.Error -> showError(state.message)
+            is MoviesState.Empty -> showEmpty(state.message)
+        }
     }
 
     override fun showToast(additionalMessage: String) {
