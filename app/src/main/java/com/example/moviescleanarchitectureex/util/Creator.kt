@@ -1,6 +1,5 @@
 package com.example.moviescleanarchitectureex.util
 
-import android.app.Activity
 import android.content.Context
 import com.example.moviescleanarchitectureex.data.MoviesRepositoryImpl
 import com.example.moviescleanarchitectureex.data.network.RetrofitNetworkClient
@@ -9,7 +8,6 @@ import com.example.moviescleanarchitectureex.domen.api.MoviesRepository
 import com.example.moviescleanarchitectureex.domen.impl.MoviesInteractorImpl
 import com.example.moviescleanarchitectureex.presentation.movies.MoviesSearchPresenter
 import com.example.moviescleanarchitectureex.presentation.poster.PosterPresenter
-import com.example.moviescleanarchitectureex.presentation.movies.MoviesView
 import com.example.moviescleanarchitectureex.presentation.poster.PosterView
 
 object Creator {
@@ -22,11 +20,9 @@ object Creator {
     }
 
     fun provideMoviesSearchPresenter(
-        moviesView: MoviesView,
         context: Context
     ): MoviesSearchPresenter {
         return MoviesSearchPresenter(
-            view = moviesView,
             context = context
         )
     }
