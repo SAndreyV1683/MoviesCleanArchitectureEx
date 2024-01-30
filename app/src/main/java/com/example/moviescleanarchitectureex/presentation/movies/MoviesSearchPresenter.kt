@@ -33,30 +33,29 @@ class MoviesSearchPresenter(
         handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
 
+
+
     private fun searchRequest(newSearchText: String) {
         if (newSearchText.isNotEmpty()) {
-            view.showPlaceholderMessage(false)
-            view.showMoviesList(false)
-            view.showProgressBar(true)
+            view.showLoading()
 
             moviesInteractor.searchMovies(newSearchText, object : MoviesInteractor.MoviesConsumer {
                 override fun consume(foundMovies: List<Movie>?, message: String?) {
                     handler.post {
-                        view.showProgressBar(false)
                         if (foundMovies != null) {
-
                             // Обновляем список на экране
                             movies.clear()
                             movies.addAll(foundMovies)
-                            view.updateMoviesList(movies)
-                            view.showMoviesList(true)
                         }
-                        if (message != null) {
-                            showMessage(context.getString(R.string.something_went_wrong), message)
-                        } else if (movies.isEmpty()) {
-                            showMessage(context.getString(R.string.nothing_found), "")
-                        } else {
-                            hideMessage()
+                        when  {
+                            message != null -> {
+                                view.showError(context.getString(R.string.something_went_wrong))
+                                view.showToast(message)
+                            }
+                            movies.isEmpty() -> {
+                                view.showEmpty(context.getString(R.string.nothing_found))
+                            }
+                            else -> view.showContent(movies)
                         }
                     }
                 }
@@ -64,7 +63,7 @@ class MoviesSearchPresenter(
         }
     }
 
-    private fun showMessage(text: String, additionalMessage: String) {
+/*    private fun showMessage(text: String, additionalMessage: String) {
         if (text.isNotEmpty()) {
             // Заменили работу с элементами UI на
             // вызовы методов интерфейса
@@ -87,7 +86,7 @@ class MoviesSearchPresenter(
         // Заменили работу с элементами UI на
         // вызовы методов интерфейса
         view.showPlaceholderMessage(false)
-    }
+    }*/
 
     fun onDestroy() {
         handler.removeCallbacks(searchRunnable)
