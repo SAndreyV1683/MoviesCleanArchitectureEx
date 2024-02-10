@@ -1,8 +1,8 @@
 package com.example.moviescleanarchitectureex
 
 import android.app.Application
-import com.example.moviescleanarchitectureex.presentation.movies.MoviesSearchPresenter
+import com.example.moviescleanarchitectureex.presentation.movies.MoviesSearchViewModel
 
 class MoviesApplication : Application() {
-    var moviesSearchPresenter : MoviesSearchPresenter? = null
+    var moviesSearchViewModel : MoviesSearchViewModel? = null
 }
