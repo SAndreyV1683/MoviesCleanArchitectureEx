@@ -18,6 +18,7 @@ import com.example.moviescleanarchitectureex.domen.models.Movie
 import com.example.moviescleanarchitectureex.ui.models.MoviesState
 import com.example.moviescleanarchitectureex.ui.movies.SingleLiveEvent
 import com.example.moviescleanarchitectureex.util.Creator
+import javax.inject.Inject
 
 class MoviesSearchViewModel(
     application: Application

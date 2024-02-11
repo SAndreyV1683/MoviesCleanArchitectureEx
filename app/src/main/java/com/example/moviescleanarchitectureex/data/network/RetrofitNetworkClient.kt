@@ -8,8 +8,9 @@ import com.example.moviescleanarchitectureex.data.dto.MoviesSearchRequest
 import com.example.moviescleanarchitectureex.data.dto.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Inject
 
-class RetrofitNetworkClient(
+class  RetrofitNetworkClient @Inject constructor(
     private val context: Context
 ): NetworkClient {
 

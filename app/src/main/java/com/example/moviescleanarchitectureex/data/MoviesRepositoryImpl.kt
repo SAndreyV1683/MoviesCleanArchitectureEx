@@ -6,8 +6,9 @@ import com.example.moviescleanarchitectureex.data.localstorage.LocalStorage
 import com.example.moviescleanarchitectureex.domen.api.MoviesRepository
 import com.example.moviescleanarchitectureex.domen.models.Movie
 import com.example.moviescleanarchitectureex.util.Resource
+import javax.inject.Inject
 
-class MoviesRepositoryImpl(
+class MoviesRepositoryImpl @Inject constructor (
     private val networkClient: NetworkClient,
     private val localStorage: LocalStorage,
 ) : MoviesRepository {

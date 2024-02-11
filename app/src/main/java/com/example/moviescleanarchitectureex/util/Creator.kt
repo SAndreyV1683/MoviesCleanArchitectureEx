@@ -15,7 +15,7 @@ object Creator {
     private fun getMoviesRepository(context: Context): MoviesRepository {
         return MoviesRepositoryImpl(
             RetrofitNetworkClient(context),
-            LocalStorage(context.getSharedPreferences("local_storage", Context.MODE_PRIVATE))
+            LocalStorage(context)
         )
     }
 

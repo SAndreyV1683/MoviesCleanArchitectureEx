@@ -1,8 +1,13 @@
 package com.example.moviescleanarchitectureex.data.localstorage
 
+import android.content.Context
 import android.content.SharedPreferences
+import javax.inject.Inject
 
-class LocalStorage(private val sharedPreferences: SharedPreferences) {
+
+class LocalStorage @Inject constructor(context: Context) {
+
+    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("local_storage", Context.MODE_PRIVATE)
     private companion object {
         const val FAVORITES_KEY = "FAVORITES_KEY"
     }
