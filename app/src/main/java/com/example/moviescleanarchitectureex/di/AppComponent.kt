@@ -7,7 +7,7 @@ import dagger.BindsInstance
 import dagger.Component
 
 
-@Component(modules = [MoviesRepositoryModule::class, RetrofitClientModule::class])
+@Component(modules = [AppModule::class])
 interface AppComponent {
 
     // Factory to create instances of the AppComponent

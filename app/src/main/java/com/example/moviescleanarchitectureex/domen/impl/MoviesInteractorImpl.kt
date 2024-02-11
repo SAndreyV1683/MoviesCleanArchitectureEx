@@ -14,6 +14,7 @@ class MoviesInteractorImpl(private val repository: MoviesRepository) : MoviesInt
            when (val resource = repository.searchMovie(expression)) {
                is Resource.Success -> { consumer.consume(resource.data, null) }
                is Resource.Error -> { consumer.consume(null, resource.message) }
+               else -> {}
            }
        }
     }

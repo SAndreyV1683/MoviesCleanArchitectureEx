@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 class MoviesRepositoryImpl @Inject constructor (
     private val networkClient: NetworkClient,
-    private val localStorage: LocalStorage,
+    private val localStorage: LocalStorage
 ) : MoviesRepository {
     override fun searchMovie(expression: String): Resource<List<Movie>> {
         val response = networkClient.doRequest(MoviesSearchRequest(expression))

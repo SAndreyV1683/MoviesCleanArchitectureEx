@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.moviescleanarchitectureex.MoviesApplication
 import com.example.moviescleanarchitectureex.R
 import com.example.moviescleanarchitectureex.domen.api.MoviesInteractor
 import com.example.moviescleanarchitectureex.domen.models.Movie
@@ -34,8 +35,12 @@ class MoviesSearchViewModel(
             }
         }
     }
+    init {
+        (application as MoviesApplication).appComponent.inject(this)
+    }
 
-    private val moviesInteractor = Creator.provideMoviesInteractor(getApplication())
+    @Inject
+    lateinit var moviesInteractor: MoviesInteractor //= Creator.provideMoviesInteractor(getApplication())
     private val handler = Handler(Looper.getMainLooper())
 
     private val stateLiveData = MutableLiveData<MoviesState>()
