@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import com.example.moviescleanarchitectureex.data.NetworkClient
+import com.example.moviescleanarchitectureex.data.dto.MovieDetailsRequest
 import com.example.moviescleanarchitectureex.data.dto.MoviesSearchRequest
 import com.example.moviescleanarchitectureex.data.dto.Response
 import retrofit2.Retrofit
@@ -26,13 +27,19 @@ class  RetrofitNetworkClient @Inject constructor(
             return Response().apply { resultCode = -1}
         }
 
-        return if (dto is MoviesSearchRequest) {
-            val resp = imdbService.findMovies(dto.expression).execute()
-            val body = resp.body() ?: Response()
-            body.apply { resultCode = resp.code() }
-        } else {
-            Response().apply { resultCode = 400 }
+        if ((dto !is MoviesSearchRequest) && (dto !is MovieDetailsRequest)) {
+            return Response().apply { resultCode = -1 }
         }
+
+        val response = if (dto is MoviesSearchRequest) {
+            imdbService.findMovies(dto.expression).execute()
+        } else {
+            imdbService.getMovieDetails((dto as MovieDetailsRequest).id).execute()
+        }
+
+        val body = response.body()
+        return body?.apply { resultCode = response.code() } ?: Response().apply { resultCode = response.code() }
+
     }
 
     private fun isConnected(): Boolean {

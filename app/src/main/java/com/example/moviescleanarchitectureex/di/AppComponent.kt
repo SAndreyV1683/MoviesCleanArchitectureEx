@@ -2,7 +2,7 @@ package com.example.moviescleanarchitectureex.di
 
 import android.content.Context
 import com.example.moviescleanarchitectureex.presentation.movies.MoviesSearchViewModel
-import com.example.moviescleanarchitectureex.ui.movies.MoviesActivity
+import com.example.moviescleanarchitectureex.presentation.poster.PosterFragment
 import dagger.BindsInstance
 import dagger.Component
 
@@ -18,4 +18,5 @@ interface AppComponent {
     }
 
     fun inject(moviesSearchViewModel: MoviesSearchViewModel)
+    fun inject(posterFragment: PosterFragment)
 }

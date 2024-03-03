@@ -8,11 +8,21 @@ import com.example.moviescleanarchitectureex.data.network.RetrofitNetworkClient
 import com.example.moviescleanarchitectureex.domen.api.MoviesInteractor
 import com.example.moviescleanarchitectureex.domen.api.MoviesRepository
 import com.example.moviescleanarchitectureex.domen.impl.MoviesInteractorImpl
+import com.example.moviescleanarchitectureex.presentation.movies.MoviesSearchViewModel
+import com.example.moviescleanarchitectureex.presentation.poster.AboutViewModel
+import com.example.moviescleanarchitectureex.presentation.poster.PosterViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 
-@Module(includes = [AppModule.NetworkModule::class, AppModule.LocalStorageModule::class, AppModule.AppBindModule::class, AppModule.MoviesInteractorModule::class])
+@Module(
+    includes = [
+    AppModule.NetworkModule::class,
+    AppModule.LocalStorageModule::class,
+    AppModule.AppBindModule::class,
+    AppModule.MoviesInteractorModule::class,
+    AppModule.ViewModelModule::class]
+)
 class AppModule {
 
     @Provides
@@ -78,6 +88,26 @@ class AppModule {
             context: Context
         ): LocalStorage {
             return LocalStorage(context)
+        }
+    }
+
+    @Module
+    class ViewModelModule {
+        @Provides
+        fun provideMoviesSearchViewModel() {
+            MoviesSearchViewModel.getViewModelFactory()
+        }
+        @Provides
+        fun providePosterViewModel(posterUrl: String) {
+            PosterViewModel.getViewModelFactory(posterUrl)
+        }
+
+        @Provides
+        fun provideAboutViewModel(
+            movieId: String,
+            moviesInteractor: MoviesInteractor
+        ) {
+            AboutViewModel.getViewModelFactory(movieId, moviesInteractor)
         }
     }
 }

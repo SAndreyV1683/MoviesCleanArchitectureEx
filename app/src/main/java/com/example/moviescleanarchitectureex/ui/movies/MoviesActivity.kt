@@ -15,14 +15,12 @@ import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.moviescleanarchitectureex.MoviesApplication
 import com.example.moviescleanarchitectureex.R
 import com.example.moviescleanarchitectureex.domen.models.Movie
 import com.example.moviescleanarchitectureex.presentation.movies.MoviesSearchViewModel
 import com.example.moviescleanarchitectureex.presentation.movies.MoviesView
 import com.example.moviescleanarchitectureex.ui.models.MoviesState
-import com.example.moviescleanarchitectureex.ui.poster.PosterActivity
-import javax.inject.Inject
+import com.example.moviescleanarchitectureex.ui.poster.DetailsActivity
 
 class MoviesActivity : ComponentActivity(), MoviesView {
 
@@ -34,7 +32,7 @@ class MoviesActivity : ComponentActivity(), MoviesView {
         object : MoviesAdapter.MovieClickListener {
             override fun onMovieClick(movie: Movie) {
                 if (clickDebounce()) {
-                    val intent = Intent(this@MoviesActivity, PosterActivity::class.java)
+                    val intent = Intent(this@MoviesActivity, DetailsActivity::class.java)
                     intent.putExtra("poster", movie.image)
                     startActivity(intent)
                 }
@@ -62,7 +60,7 @@ class MoviesActivity : ComponentActivity(), MoviesView {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_movies)
 
-        viewModel =ViewModelProvider(this, MoviesSearchViewModel.getViewModelFactory())[MoviesSearchViewModel::class.java]
+        viewModel = ViewModelProvider(this, MoviesSearchViewModel.getViewModelFactory())[MoviesSearchViewModel::class.java]
 
         placeholderMessage = findViewById(R.id.placeholderMessage)
         queryInput = findViewById(R.id.queryInput)
