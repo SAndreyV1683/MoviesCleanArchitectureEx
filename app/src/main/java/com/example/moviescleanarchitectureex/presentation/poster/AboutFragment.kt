@@ -1,20 +1,35 @@
 package com.example.moviescleanarchitectureex.presentation.poster
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import com.example.moviescleanarchitectureex.MoviesCastActivity
+import com.example.moviescleanarchitectureex.appComponent
 import com.example.moviescleanarchitectureex.databinding.FragmentAboutBinding
 import com.example.moviescleanarchitectureex.domen.models.MovieDetails
 import com.example.moviescleanarchitectureex.ui.models.AboutState
 import javax.inject.Inject
 
 class AboutFragment: Fragment() {
-    
+
+    lateinit var movieId: String
+    private val aboutViewModel: AboutViewModel by viewModels {
+        factory.create(movieId)
+    }
     @Inject
-    private lateinit var aboutViewModel: AboutViewModel
+    lateinit var factory: AboutViewModel.AboutViewModelFactory.Factory
+
     private lateinit var binding: FragmentAboutBinding
+
+    override fun onAttach(context: Context) {
+        context.appComponent.inject(this)
+        movieId  = requireArguments().getString(MOVIE_ID, "")
+        super.onAttach(context)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,6 +47,14 @@ class AboutFragment: Fragment() {
                 is AboutState.Content -> showDetails(it.movie)
                 is AboutState.Error -> showErrorMessage(it.message)
             }
+        }
+        binding.showCastButton.setOnClickListener {
+            startActivity(
+                MoviesCastActivity.newInstance(
+                    context = requireContext(),
+                    movieId = requireArguments().getString(MOVIE_ID).orEmpty()
+                )
+            )
         }
     }
 

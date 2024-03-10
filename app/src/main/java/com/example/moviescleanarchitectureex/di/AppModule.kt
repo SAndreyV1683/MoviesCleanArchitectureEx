@@ -1,113 +1,64 @@
 package com.example.moviescleanarchitectureex.di
 
-import android.content.Context
 import com.example.moviescleanarchitectureex.data.MoviesRepositoryImpl
 import com.example.moviescleanarchitectureex.data.NetworkClient
 import com.example.moviescleanarchitectureex.data.localstorage.LocalStorage
+import com.example.moviescleanarchitectureex.data.network.IMDbApiService
 import com.example.moviescleanarchitectureex.data.network.RetrofitNetworkClient
 import com.example.moviescleanarchitectureex.domen.api.MoviesInteractor
 import com.example.moviescleanarchitectureex.domen.api.MoviesRepository
 import com.example.moviescleanarchitectureex.domen.impl.MoviesInteractorImpl
-import com.example.moviescleanarchitectureex.presentation.movies.MoviesSearchViewModel
-import com.example.moviescleanarchitectureex.presentation.poster.AboutViewModel
-import com.example.moviescleanarchitectureex.presentation.poster.PosterViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 @Module(
-    includes = [
-    AppModule.NetworkModule::class,
-    AppModule.LocalStorageModule::class,
-    AppModule.AppBindModule::class,
-    AppModule.MoviesInteractorModule::class,
-    AppModule.ViewModelModule::class]
+    includes = [BindModule::class, NetworkModule::class]
 )
 class AppModule {
-
     @Provides
     fun provideMoviesRepository(
         networkClient: NetworkClient,
         localStorage: LocalStorage
-    ): MoviesRepository{
+    ): MoviesRepository {
         return MoviesRepositoryImpl(
             networkClient,
             localStorage
         )
     }
+
+}
+
+@Module
+interface BindModule {
+
+    /**To provide implementation rather than implementation of MoviesInteractorImpl and NetworkClient**/
+    @Binds
+    fun bindsMoviesInteractor(moviesInteractorImpl: MoviesInteractorImpl): MoviesInteractor
+    @Binds
+    fun bindsNetworkClient(retrofitNetworkClient: RetrofitNetworkClient): NetworkClient
+
+}
+
+
+
+@Module
+class NetworkModule {
     @Provides
-    fun provideMoviesRepositoryImpl(
-        networkClient: NetworkClient,
-        localStorage: LocalStorage
-    ): MoviesRepositoryImpl {
-        return MoviesRepositoryImpl(
-            networkClient,
-            localStorage
-        )
-    }
-
-    @Module
-    class MoviesInteractorModule {
-        @Provides
-        fun provideMoviesInteractor(
-            moviesRepository: MoviesRepository
-        ): MoviesInteractorImpl {
-            return MoviesInteractorImpl(moviesRepository)
-        }
-    }
-
-    @Module
-    interface AppBindModule {
-        @Binds
-        fun bindMoviesInteractorImplToMoviesInteractor(
-            moviesInteractorImpl: MoviesInteractorImpl
-        ): MoviesInteractor
-    }
-
-    @Module
-    class NetworkModule {
-
-        @Provides
-        fun provideNetworkClient(
-            retrofitNetworkClient: RetrofitNetworkClient
-        ): NetworkClient {
-            return retrofitNetworkClient
-        }
-        @Provides
-        fun provideRetrofitNetworkClient(
-            context: Context
-        ): RetrofitNetworkClient {
-            return RetrofitNetworkClient(context)
-        }
-    }
-
-    @Module
-    class LocalStorageModule{
-        @Provides
-        fun provideLocalStorage(
-            context: Context
-        ): LocalStorage {
-            return LocalStorage(context)
-        }
-    }
-
-    @Module
-    class ViewModelModule {
-        @Provides
-        fun provideMoviesSearchViewModel() {
-            MoviesSearchViewModel.getViewModelFactory()
-        }
-        @Provides
-        fun providePosterViewModel(posterUrl: String) {
-            PosterViewModel.getViewModelFactory(posterUrl)
-        }
-
-        @Provides
-        fun provideAboutViewModel(
-            movieId: String,
-            moviesInteractor: MoviesInteractor
-        ) {
-            AboutViewModel.getViewModelFactory(movieId, moviesInteractor)
-        }
+    fun provideImdbApiService(): IMDbApiService {
+        val imdbBaseUrl = "https://tv-api.com"
+        val client = OkHttpClient.Builder().addInterceptor(HttpLoggingInterceptor().apply {
+            setLevel(HttpLoggingInterceptor.Level.BODY)
+        }).build()
+        val retrofit =  Retrofit.Builder()
+            .baseUrl(imdbBaseUrl)
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        return retrofit.create(IMDbApiService::class.java)
     }
 }

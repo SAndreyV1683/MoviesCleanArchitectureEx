@@ -6,18 +6,28 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+
 
 class PosterViewModel(
-    private val posterUrl: String
+    posterUrl: String
 ): ViewModel() {
     private val urlLiveData = MutableLiveData(posterUrl)
     fun observeUrl(): LiveData<String> = urlLiveData
 
-    companion object {
-        fun getViewModelFactory(posterUrl: String): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                PosterViewModel(posterUrl)
-            }
+    class PosterViewModelFactory @AssistedInject constructor(
+        @Assisted("newPosterUrl") private val posterUrl: String
+    ): ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return PosterViewModel(posterUrl) as T
+        }
+
+        @AssistedFactory
+        interface Factory {
+            fun create(@Assisted("newPosterUrl") posterUrl: String): PosterViewModelFactory
         }
     }
 

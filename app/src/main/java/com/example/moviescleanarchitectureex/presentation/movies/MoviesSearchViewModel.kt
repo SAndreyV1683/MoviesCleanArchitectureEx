@@ -18,7 +18,6 @@ import com.example.moviescleanarchitectureex.domen.api.MoviesInteractor
 import com.example.moviescleanarchitectureex.domen.models.Movie
 import com.example.moviescleanarchitectureex.ui.models.MoviesState
 import com.example.moviescleanarchitectureex.ui.movies.SingleLiveEvent
-import com.example.moviescleanarchitectureex.util.Creator
 import javax.inject.Inject
 
 class MoviesSearchViewModel(
@@ -40,14 +39,14 @@ class MoviesSearchViewModel(
     }
 
     @Inject
-    lateinit var moviesInteractor: MoviesInteractor //= Creator.provideMoviesInteractor(getApplication())
+    lateinit var moviesInteractor: MoviesInteractor
     private val handler = Handler(Looper.getMainLooper())
 
     private val stateLiveData = MutableLiveData<MoviesState>()
     fun observeState(): LiveData<MoviesState> = mediatorStateLiveData
 
-    private val showToast = SingleLiveEvent<String>()
-    fun observeShowToast(): LiveData<String> = showToast
+    private val showToast = SingleLiveEvent<String?>()
+    fun observeShowToast(): LiveData<String?> = showToast
 
     private var latestSearchText: String? = null
 
@@ -135,6 +134,7 @@ class MoviesSearchViewModel(
                                     message = getApplication<Application>().getString(R.string.something_went_wrong),
                                 )
                             )
+
                             showToast.postValue(message)
                         }
 

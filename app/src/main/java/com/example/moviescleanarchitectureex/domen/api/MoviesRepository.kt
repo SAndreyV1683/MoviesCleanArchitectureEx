@@ -1,6 +1,7 @@
 package com.example.moviescleanarchitectureex.domen.api
 
 import com.example.moviescleanarchitectureex.domen.models.Movie
+import com.example.moviescleanarchitectureex.domen.models.MovieCast
 import com.example.moviescleanarchitectureex.domen.models.MovieDetails
 import com.example.moviescleanarchitectureex.util.Resource
 
@@ -9,5 +10,7 @@ interface MoviesRepository {
     fun addMovieToFavorites(movie: Movie)
     fun removeMovieFromFavorites(movie: Movie)
     fun getMovieDetails(movieId: String): Resource<MovieDetails>
+    fun getMovieCast(movieId: String): Resource<MovieCast>
+
 
 }

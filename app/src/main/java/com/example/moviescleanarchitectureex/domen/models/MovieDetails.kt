@@ -1,6 +1,6 @@
 package com.example.moviescleanarchitectureex.domen.models
 
-data class MovieDetails(val id: String,
+data class MovieDetails(val id: String?,
                         val title: String,
                         val imDbRating: String,
                         val year: String,

@@ -34,6 +34,7 @@ class MoviesActivity : ComponentActivity(), MoviesView {
                 if (clickDebounce()) {
                     val intent = Intent(this@MoviesActivity, DetailsActivity::class.java)
                     intent.putExtra("poster", movie.image)
+                    intent.putExtra("id", movie.id)
                     startActivity(intent)
                 }
             }
@@ -92,6 +93,7 @@ class MoviesActivity : ComponentActivity(), MoviesView {
         viewModel.observeShowToast().observe(this) {
             showToast(it)
         }
+
     }
 
     override fun onDestroy() {

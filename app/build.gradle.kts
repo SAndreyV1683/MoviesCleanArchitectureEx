@@ -44,7 +44,7 @@ android {
 
 }
 
-
+val archComponents = "2.7.0"
 
 dependencies {
 
@@ -52,15 +52,23 @@ dependencies {
     implementation ("com.google.dagger:dagger:2.50")
     kapt ("com.google.dagger:dagger-compiler:2.50")
     kapt ("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.9.0")
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$archComponents")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$archComponents")
+    implementation("androidx.lifecycle:lifecycle-common-java8:$archComponents")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$archComponents")
+
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation ("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
 
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.10.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
