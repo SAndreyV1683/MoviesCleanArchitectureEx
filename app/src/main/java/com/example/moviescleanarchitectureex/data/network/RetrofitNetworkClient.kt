@@ -20,7 +20,7 @@ class  RetrofitNetworkClient @Inject constructor(
             return Response().apply { resultCode = -1}
         }
 
-        if ((dto !is MoviesSearchRequest) && (dto !is MovieDetailsRequest)) {
+        if ((dto !is MoviesSearchRequest) && (dto !is MovieDetailsRequest) && (dto !is MovieCastRequest)) {
             return Response().apply { resultCode = 400 }
         }
 
