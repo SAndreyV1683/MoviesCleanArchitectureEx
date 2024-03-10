@@ -1,4 +1,4 @@
-package com.example.moviescleanarchitectureex.presentation.poster
+package com.example.moviescleanarchitectureex.presentation.about
 
 import android.content.Context
 import android.os.Bundle
@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.example.moviescleanarchitectureex.MoviesCastActivity
+import com.example.moviescleanarchitectureex.presentation.moviescast.MoviesCastActivity
 import com.example.moviescleanarchitectureex.appComponent
 import com.example.moviescleanarchitectureex.databinding.FragmentAboutBinding
 import com.example.moviescleanarchitectureex.domen.models.MovieDetails
@@ -84,7 +84,7 @@ class AboutFragment: Fragment() {
 
     companion object {
         private const val MOVIE_ID = "movie_id"
-        fun newInstance(movieId: String) = AboutFragment().apply { 
+        fun newInstance(movieId: String) = AboutFragment().apply {
             arguments = Bundle().apply { 
                 putString(MOVIE_ID, movieId)
             }

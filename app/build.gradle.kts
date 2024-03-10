@@ -50,6 +50,7 @@ dependencies {
 
 
     implementation ("com.google.dagger:dagger:2.50")
+    implementation("com.google.android.ads:mediation-test-suite:3.0.0")
     kapt ("com.google.dagger:dagger-compiler:2.50")
     kapt ("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.9.0")
 

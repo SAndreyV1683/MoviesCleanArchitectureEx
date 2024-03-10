@@ -101,7 +101,7 @@ class MoviesActivity : ComponentActivity(), MoviesView {
         textWatcher.let { queryInput.removeTextChangedListener(it) }
     }
 
-    override fun showToast(additionalMessage: String) {
+    override fun showToast(additionalMessage: String?) {
         Toast.makeText(this, additionalMessage, Toast.LENGTH_LONG).show()
     }
 

@@ -44,4 +44,13 @@ class MoviesInteractorImpl @Inject constructor(private val repository: MoviesRep
             }
         }
     }
+
+    override fun getMoviesCast(movieId: String, consumer: MoviesInteractor.MovieCastConsumer) {
+        executor.execute {
+            when (val resource = repository.getMovieCast(movieId)) {
+                is Resource.Success -> { consumer.consume(resource.data, null) }
+                is Resource.Error -> { consumer.consume(resource.data, resource.message) }
+            }
+        }
+    }
 }

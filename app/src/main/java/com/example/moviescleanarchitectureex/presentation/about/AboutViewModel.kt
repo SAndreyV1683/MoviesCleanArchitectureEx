@@ -1,4 +1,4 @@
-package com.example.moviescleanarchitectureex.presentation.poster
+package com.example.moviescleanarchitectureex.presentation.about
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -34,7 +34,7 @@ class AboutViewModel(
         )
     }
 
-    @Suppress("UNCHECKED_CAST")
+
     class AboutViewModelFactory @AssistedInject constructor(
         @Assisted("newMovieId") private val movieId: String,
         private val moviesInteractor: MoviesInteractor
