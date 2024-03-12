@@ -6,8 +6,9 @@ interface MoviesCastState {
     object Loading: MoviesCastState
     data class Content(
         val fullTitle: String,
-        val items: List<MoviesCastRVItem>
-    ): MoviesCastState
+        // Поменяли тип ячеек на более общий
+        val items: List<RVItem>,
+    ) : MoviesCastState
 
     data class Error(
         val message: String

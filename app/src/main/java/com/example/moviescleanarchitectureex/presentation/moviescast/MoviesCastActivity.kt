@@ -9,6 +9,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.moviescleanarchitectureex.appComponent
 import com.example.moviescleanarchitectureex.databinding.ActivityMoviesCastBinding
+import com.hannesdorfmann.adapterdelegates4.ListDelegationAdapter
 import javax.inject.Inject
 
 class MoviesCastActivity : AppCompatActivity() {
@@ -20,7 +21,10 @@ class MoviesCastActivity : AppCompatActivity() {
     }
     @Inject
     lateinit var factory: MoviesCastViewModel.MovieCastViewModelFactory.Factory
-    private val adapter = MoviesCastAdapter()
+    private val adapter = ListDelegationAdapter(
+        movieCastHeaderDelegate(),
+        movieCastPersonDelegate()
+    )
 
 
 
@@ -32,7 +36,7 @@ class MoviesCastActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // Привязываем адаптер и LayoutManager к RecyclerView
-        binding.movieCastRecyclerView.adapter = adapter
+
         binding.movieCastRecyclerView.layoutManager = LinearLayoutManager(this)
 
         // Наблюдаем за UiState из ViewModel
