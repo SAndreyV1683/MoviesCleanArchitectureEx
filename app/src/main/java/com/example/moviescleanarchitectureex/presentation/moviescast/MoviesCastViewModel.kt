@@ -24,7 +24,7 @@ class MoviesCastViewModel(
         moviesInteractor.getMoviesCast(movieId, object: MoviesInteractor.MovieCastConsumer {
             override fun consume(movieCast: MovieCast?, errorMessage: String?) {
                 if (movieCast != null) {
-                    stateLiveData.postValue(MoviesCastState.Content(movieCast))
+                    stateLiveData.postValue(castToUiStateContent(movieCast))
                 } else {
                     stateLiveData.postValue(MoviesCastState.Error(errorMessage ?: "Unknown error"))
                 }
@@ -32,19 +32,31 @@ class MoviesCastViewModel(
         })
     }
 
-    /*class MovieCastViewModelFactory @AssistedInject constructor(
-        @Assisted("newMovieId") private val movieId: String,
-        private val moviesInteractor: MoviesInteractor
-    ) : ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return MoviesCastViewModel(movieId, moviesInteractor) as T
+    private fun castToUiStateContent(cast: MovieCast): MoviesCastState {
+        val items = buildList<MoviesCastRVItem> {
+            if (cast.directors.isNotEmpty()) {
+                this += MoviesCastRVItem.HeaderItem("Directors")
+                this += cast.directors.map { MoviesCastRVItem.PersonItem(it) }
+            }
+            if (cast.writers.isNotEmpty()) {
+                this += MoviesCastRVItem.HeaderItem("Writers")
+                this += cast.writers.map { MoviesCastRVItem.PersonItem(it) }
+            }
+            if (cast.actors.isNotEmpty()) {
+                this += MoviesCastRVItem.HeaderItem("Actors")
+                this += cast.actors.map { MoviesCastRVItem.PersonItem(it) }
+            }
+            if (cast.others.isNotEmpty()) {
+                this += MoviesCastRVItem.HeaderItem("Others")
+                this += cast.others.map { MoviesCastRVItem.PersonItem(it) }
+            }
         }
-        @AssistedFactory
-        interface Factory {
-            fun create(@Assisted("newMovieId") movieId: String): MovieCastViewModelFactory
-        }
-    }*/
+
+        return MoviesCastState.Content(
+            fullTitle = cast.fullTitle,
+            items = items
+        )
+    }
 
     class MovieCastViewModelFactory @AssistedInject constructor(
         @Assisted("newMovieId") private val movieId: String,

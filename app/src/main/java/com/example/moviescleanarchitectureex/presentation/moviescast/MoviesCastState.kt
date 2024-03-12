@@ -5,7 +5,8 @@ import com.example.moviescleanarchitectureex.domen.models.MovieCast
 interface MoviesCastState {
     object Loading: MoviesCastState
     data class Content(
-        val movie: MovieCast
+        val fullTitle: String,
+        val items: List<MoviesCastRVItem>
     ): MoviesCastState
 
     data class Error(

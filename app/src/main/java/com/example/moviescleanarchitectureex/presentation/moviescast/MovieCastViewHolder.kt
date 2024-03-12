@@ -15,17 +15,17 @@ class MovieCastViewHolder(parent: ViewGroup) :
     ) {
 
         private val binding = ListItemCastBinding.bind(itemView)
-        fun bind(movieCastPerson: MovieCastPerson) {
-            if (movieCastPerson.image == null) {
+        fun bind(movieCastPerson: MoviesCastRVItem.PersonItem) {
+            if (movieCastPerson.data.image == null) {
                 binding.actorImageView.isVisible = false
             } else {
                 Glide.with(itemView)
-                    .load(movieCastPerson.image)
+                    .load(movieCastPerson.data.image)
                     .into(binding.actorImageView)
                 binding.actorImageView.isVisible = true
             }
 
-            binding.actorNameTextView.text = movieCastPerson.name
-            binding.actorDescriptionTextView.text = movieCastPerson.description
+            binding.actorNameTextView.text = movieCastPerson.data.name
+            binding.actorDescriptionTextView.text = movieCastPerson.data.description
         }
 }

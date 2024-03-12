@@ -1,0 +1,3 @@
+package com.example.moviescleanarchitectureex.presentation.moviescast
+
+interface RVItem

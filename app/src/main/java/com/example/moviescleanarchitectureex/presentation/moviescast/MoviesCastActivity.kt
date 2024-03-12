@@ -68,11 +68,11 @@ class MoviesCastActivity : AppCompatActivity() {
         binding.errorMessageTextView.isVisible = false
 
         binding.contentContainer.isVisible = true
-        binding.movieTitle.text = state.movie.fullTitle
+        binding.movieTitle.text = state.fullTitle
 
         // Просто объединяем всех участников
         // в единый список и отображаем
-        adapter.persons = state.movie.directors + state.movie.writers + state.movie.actors + state.movie.others
+        adapter.items = state.items
         adapter.notifyDataSetChanged()
     }
 
