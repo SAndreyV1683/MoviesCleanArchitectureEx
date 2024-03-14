@@ -4,8 +4,8 @@ import android.content.Context
 import com.example.moviescleanarchitectureex.presentation.movies.MoviesSearchViewModel
 import com.example.moviescleanarchitectureex.presentation.about.AboutFragment
 import com.example.moviescleanarchitectureex.presentation.about.AboutViewModel
-import com.example.moviescleanarchitectureex.presentation.moviescast.MoviesCastActivity
 import com.example.moviescleanarchitectureex.presentation.poster.PosterFragment
+import com.example.moviescleanarchitectureex.ui.moviescast.MoviesCastFragment
 import dagger.BindsInstance
 import dagger.Component
 
@@ -23,5 +23,5 @@ interface AppComponent {
     fun inject(aboutViewModel: AboutViewModel)
     fun inject(posterFragment: PosterFragment)
     fun inject(aboutFragment: AboutFragment)
-    fun inject(moviesCastActivity: MoviesCastActivity)
+    fun inject(moviesCastFragment: MoviesCastFragment)
 }

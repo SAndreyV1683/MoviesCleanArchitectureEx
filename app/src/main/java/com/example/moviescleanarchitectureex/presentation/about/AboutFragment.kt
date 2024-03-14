@@ -6,12 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
-import com.example.moviescleanarchitectureex.presentation.moviescast.MoviesCastActivity
+import com.example.moviescleanarchitectureex.R
 import com.example.moviescleanarchitectureex.appComponent
 import com.example.moviescleanarchitectureex.databinding.FragmentAboutBinding
 import com.example.moviescleanarchitectureex.domen.models.MovieDetails
 import com.example.moviescleanarchitectureex.ui.models.AboutState
+import com.example.moviescleanarchitectureex.ui.moviescast.MoviesCastFragment
 import javax.inject.Inject
 
 class AboutFragment: Fragment() {
@@ -49,12 +51,13 @@ class AboutFragment: Fragment() {
             }
         }
         binding.showCastButton.setOnClickListener {
-            startActivity(
-                MoviesCastActivity.newInstance(
-                    context = requireContext(),
-                    movieId = requireArguments().getString(MOVIE_ID).orEmpty()
+            parentFragment?.parentFragmentManager?.commit {
+                replace(
+                    R.id.rootFragmentContainerView,
+                    MoviesCastFragment.newInstance(movieId), MoviesCastFragment.TAG
                 )
-            )
+                addToBackStack(MoviesCastFragment.TAG)
+            }
         }
     }
 
