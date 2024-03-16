@@ -1,4 +1,4 @@
-package com.example.moviescleanarchitectureex.presentation.about
+package com.example.moviescleanarchitectureex.ui.about
 
 import android.content.Context
 import android.os.Bundle
@@ -8,10 +8,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.example.moviescleanarchitectureex.R
 import com.example.moviescleanarchitectureex.appComponent
 import com.example.moviescleanarchitectureex.databinding.FragmentAboutBinding
 import com.example.moviescleanarchitectureex.domen.models.MovieDetails
+import com.example.moviescleanarchitectureex.presentation.about.AboutViewModel
 import com.example.moviescleanarchitectureex.ui.models.AboutState
 import com.example.moviescleanarchitectureex.ui.moviescast.MoviesCastFragment
 import javax.inject.Inject
@@ -51,13 +53,8 @@ class AboutFragment: Fragment() {
             }
         }
         binding.showCastButton.setOnClickListener {
-            parentFragment?.parentFragmentManager?.commit {
-                replace(
-                    R.id.rootFragmentContainerView,
-                    MoviesCastFragment.newInstance(movieId), MoviesCastFragment.TAG
-                )
-                addToBackStack(MoviesCastFragment.TAG)
-            }
+            findNavController().navigate(R.id.action_detailsFragment_to_moviesCastFragment,
+                MoviesCastFragment.createArgs(requireArguments().getString(MOVIE_ID).orEmpty()))
         }
     }
 

@@ -9,35 +9,38 @@ import androidx.fragment.app.Fragment
 import com.example.moviescleanarchitectureex.R
 import com.example.moviescleanarchitectureex.databinding.FragmentDetailsBinding
 import com.example.moviescleanarchitectureex.ui.movies.DetailsViewPagerAdapter
-import com.example.moviescleanarchitectureex.ui.root.BindingFragment
 import com.google.android.material.tabs.TabLayoutMediator
 
-class DetailsFragment: BindingFragment<FragmentDetailsBinding>() {
+class DetailsFragment: Fragment() {
 
     private lateinit var tabMediator: TabLayoutMediator
-    override fun createBinding(
+    private lateinit var binding: FragmentDetailsBinding
+
+    override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-    ): FragmentDetailsBinding {
-        return FragmentDetailsBinding.inflate(inflater, container, false)
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentDetailsBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val poster = arguments?.getString("poster") ?: ""
-        val movieId = arguments?.getString("id") ?: ""
+        val poster = arguments?.getString(ARGS_POSTER_URL) ?: ""
+        val movieId = arguments?.getString(ARGS_MOVIE_ID) ?: ""
 
-        binding?.viewPager?.adapter = DetailsViewPagerAdapter(childFragmentManager,
-            lifecycle, poster, movieId)
-        if (binding != null) {
-            tabMediator = TabLayoutMediator(binding!!.tabLayout, binding!!.viewPager) { tab, position ->
-                when(position) {
-                    0 -> tab.text = getString(R.string.poster)
-                    1 -> tab.text = getString(R.string.details)
-                }
+        binding.viewPager.adapter = DetailsViewPagerAdapter(
+            childFragmentManager,
+            lifecycle, poster, movieId
+        )
+        tabMediator = TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            when(position) {
+                0 -> tab.text = getString(R.string.poster)
+                1 -> tab.text = getString(R.string.details)
             }
-            tabMediator.attach()
         }
+        tabMediator.attach()
     }
 
     override fun onDestroyView() {
@@ -46,18 +49,13 @@ class DetailsFragment: BindingFragment<FragmentDetailsBinding>() {
     }
 
     companion object {
-        private const val POSTER = "poster"
-        private const val ID = "id"
-        const val TAG = "DetailsFragment"
+        private const val ARGS_POSTER_URL = "poster_url"
+        private const val ARGS_MOVIE_ID = "movie_id"
 
-        fun newInstance(movieId: String, posterUrl: String): Fragment {
-            return DetailsFragment().apply {
-                arguments = bundleOf(
-                    POSTER to posterUrl,
-                    ID to movieId
-                )
-            }
-        }
+        fun createArgs(movieId: String, posterUrl: String): Bundle = bundleOf(
+            ARGS_MOVIE_ID to movieId,
+            ARGS_POSTER_URL to posterUrl
+        )
     }
 
 }

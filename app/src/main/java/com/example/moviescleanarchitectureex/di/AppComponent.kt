@@ -2,7 +2,7 @@ package com.example.moviescleanarchitectureex.di
 
 import android.content.Context
 import com.example.moviescleanarchitectureex.presentation.movies.MoviesSearchViewModel
-import com.example.moviescleanarchitectureex.presentation.about.AboutFragment
+import com.example.moviescleanarchitectureex.ui.about.AboutFragment
 import com.example.moviescleanarchitectureex.presentation.about.AboutViewModel
 import com.example.moviescleanarchitectureex.presentation.poster.PosterFragment
 import com.example.moviescleanarchitectureex.ui.moviescast.MoviesCastFragment

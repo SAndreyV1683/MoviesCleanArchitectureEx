@@ -9,7 +9,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.moviescleanarchitectureex.R
 import com.example.moviescleanarchitectureex.databinding.FragmentMoviesBinding
@@ -17,27 +20,23 @@ import com.example.moviescleanarchitectureex.domen.models.Movie
 import com.example.moviescleanarchitectureex.presentation.movies.MoviesSearchViewModel
 import com.example.moviescleanarchitectureex.ui.details.DetailsFragment
 import com.example.moviescleanarchitectureex.ui.models.MoviesState
-import com.example.moviescleanarchitectureex.ui.root.BindingFragment
 
-class MoviesFragment: BindingFragment<FragmentMoviesBinding>() {
+class MoviesFragment: Fragment(){
 
     companion object {
         private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 
+    private lateinit var binding: FragmentMoviesBinding
+
     private val adapter = MoviesAdapter(
         object : MoviesAdapter.MovieClickListener {
             override fun onMovieClick(movie: Movie) {
                 if (clickDebounce()) {
-                    parentFragmentManager.beginTransaction()
-                        .setReorderingAllowed(true)
-                        .replace(
-                            R.id.rootFragmentContainerView,
-                            DetailsFragment.newInstance(movie.id, movie.image),
-                            DetailsFragment.TAG
-                        )
-                        .addToBackStack(DetailsFragment.TAG)
-                        .commit()
+                    findNavController().navigate(
+                        R.id.action_moviesFragment_to_detailsFragment,
+                        DetailsFragment.createArgs(movie.id, movie.image)
+                    )
                 }
             }
 
@@ -48,7 +47,6 @@ class MoviesFragment: BindingFragment<FragmentMoviesBinding>() {
     )
 
 
-
     private lateinit var textWatcher: TextWatcher
 
     private var isClickAllowed = true
@@ -56,19 +54,22 @@ class MoviesFragment: BindingFragment<FragmentMoviesBinding>() {
     private val handler = Handler(Looper.getMainLooper())
 
     private lateinit var viewModel: MoviesSearchViewModel
-    override fun createBinding(
+
+
+    override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-    ): FragmentMoviesBinding {
-        return FragmentMoviesBinding.inflate(inflater, container, false)
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentMoviesBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this, MoviesSearchViewModel.getViewModelFactory())[MoviesSearchViewModel::class.java]
-        binding?.locations?.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        binding?.locations?.adapter = adapter
-
+        binding.locations.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.locations.adapter = adapter
         textWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
@@ -82,7 +83,7 @@ class MoviesFragment: BindingFragment<FragmentMoviesBinding>() {
             override fun afterTextChanged(s: Editable?) {
             }
         }
-        textWatcher.let { binding?.queryInput?.addTextChangedListener(it) }
+        textWatcher.let { binding.queryInput.addTextChangedListener(it) }
 
         viewModel.observeState().observe(viewLifecycleOwner) {
             render(it)
@@ -95,7 +96,7 @@ class MoviesFragment: BindingFragment<FragmentMoviesBinding>() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        textWatcher.let { binding?.queryInput?.removeTextChangedListener(it) }
+        textWatcher.let { binding.queryInput.removeTextChangedListener(it) }
     }
     private fun showToast(additionalMessage: String?) {
         Toast.makeText(requireContext(), additionalMessage, Toast.LENGTH_LONG).show()
@@ -111,16 +112,16 @@ class MoviesFragment: BindingFragment<FragmentMoviesBinding>() {
     }
 
     private fun showLoading() {
-        binding?.locations?.visibility = View.GONE
-        binding?.placeholderMessage?.visibility = View.GONE
-        binding?.progressBar?.visibility = View.VISIBLE
+        binding.locations.visibility = View.GONE
+        binding.placeholderMessage.visibility = View.GONE
+        binding.progressBar.visibility = View.VISIBLE
     }
 
     private fun showError(errorMessage: String) {
-        binding?.locations?.visibility = View.GONE
-        binding?.placeholderMessage?.visibility = View.VISIBLE
-        binding?.progressBar?.visibility = View.GONE
-        binding?.placeholderMessage?.text = errorMessage
+        binding.locations.visibility = View.GONE
+        binding.placeholderMessage.visibility = View.VISIBLE
+        binding.progressBar.visibility = View.GONE
+        binding.placeholderMessage.text = errorMessage
     }
 
     private fun showEmpty(emptyMessage: String) {
@@ -128,9 +129,9 @@ class MoviesFragment: BindingFragment<FragmentMoviesBinding>() {
     }
 
     private fun showContent(movies: List<Movie>) {
-        binding?.locations?.visibility = View.VISIBLE
-        binding?.placeholderMessage?.visibility = View.GONE
-        binding?.progressBar?.visibility = View.GONE
+        binding.locations.visibility = View.VISIBLE
+        binding.placeholderMessage.visibility = View.GONE
+        binding.progressBar.visibility = View.GONE
 
         adapter.movies.clear()
         adapter.movies.addAll(movies)
