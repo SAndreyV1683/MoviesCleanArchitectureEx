@@ -6,6 +6,7 @@ import com.example.moviescleanarchitectureex.presentation.about.AboutFragment
 import com.example.moviescleanarchitectureex.presentation.about.AboutViewModel
 import com.example.moviescleanarchitectureex.presentation.poster.PosterFragment
 import com.example.moviescleanarchitectureex.ui.moviescast.MoviesCastFragment
+import com.example.moviescleanarchitectureex.ui.root.RootActivity
 import dagger.BindsInstance
 import dagger.Component
 
@@ -24,4 +25,5 @@ interface AppComponent {
     fun inject(posterFragment: PosterFragment)
     fun inject(aboutFragment: AboutFragment)
     fun inject(moviesCastFragment: MoviesCastFragment)
+    fun inject(rootActivity: RootActivity)
 }
