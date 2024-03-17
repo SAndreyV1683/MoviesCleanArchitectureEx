@@ -7,7 +7,9 @@ import com.example.moviescleanarchitectureex.data.network.IMDbApiService
 import com.example.moviescleanarchitectureex.data.network.RetrofitNetworkClient
 import com.example.moviescleanarchitectureex.domen.api.MoviesInteractor
 import com.example.moviescleanarchitectureex.domen.api.MoviesRepository
+import com.example.moviescleanarchitectureex.domen.api.NamesInteractor
 import com.example.moviescleanarchitectureex.domen.impl.MoviesInteractorImpl
+import com.example.moviescleanarchitectureex.domen.impl.NamesInteracrorImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -42,6 +44,8 @@ interface BindModule {
     fun bindsMoviesInteractor(moviesInteractorImpl: MoviesInteractorImpl): MoviesInteractor
     @Binds
     fun bindsNetworkClient(retrofitNetworkClient: RetrofitNetworkClient): NetworkClient
+    @Binds
+    fun bindsNamesInteractor(namesInteractorImpl: NamesInteracrorImpl): NamesInteractor
 
 }
 

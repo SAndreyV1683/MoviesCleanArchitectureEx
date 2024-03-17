@@ -8,6 +8,7 @@ import com.example.moviescleanarchitectureex.data.NetworkClient
 import com.example.moviescleanarchitectureex.data.dto.MovieCastRequest
 import com.example.moviescleanarchitectureex.data.dto.MovieDetailsRequest
 import com.example.moviescleanarchitectureex.data.dto.MoviesSearchRequest
+import com.example.moviescleanarchitectureex.data.dto.NamesSearchRequest
 import com.example.moviescleanarchitectureex.data.dto.Response
 import javax.inject.Inject
 
@@ -20,11 +21,19 @@ class  RetrofitNetworkClient @Inject constructor(
             return Response().apply { resultCode = -1}
         }
 
-        if ((dto !is MoviesSearchRequest) && (dto !is MovieDetailsRequest) && (dto !is MovieCastRequest)) {
+        if ((dto !is MoviesSearchRequest)
+            && (dto !is MovieDetailsRequest)
+            && (dto !is MovieCastRequest)
+            && (dto !is NamesSearchRequest)
+        ) {
             return Response().apply { resultCode = 400 }
         }
 
         val response = when (dto) {
+            is NamesSearchRequest -> {
+                imDbApiService.searchNames(dto.expression).execute()
+            }
+
             is MoviesSearchRequest -> {
                 imDbApiService.findMovies(dto.expression).execute()
             }
