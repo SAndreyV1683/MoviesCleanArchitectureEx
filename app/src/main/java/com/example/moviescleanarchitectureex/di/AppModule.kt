@@ -1,6 +1,10 @@
 package com.example.moviescleanarchitectureex.di
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+
 import com.example.moviescleanarchitectureex.data.MoviesRepositoryImpl
+import com.example.moviescleanarchitectureex.data.NamesRepositoryImpl
 import com.example.moviescleanarchitectureex.data.NetworkClient
 import com.example.moviescleanarchitectureex.data.localstorage.LocalStorage
 import com.example.moviescleanarchitectureex.data.network.IMDbApiService
@@ -8,16 +12,23 @@ import com.example.moviescleanarchitectureex.data.network.RetrofitNetworkClient
 import com.example.moviescleanarchitectureex.domen.api.MoviesInteractor
 import com.example.moviescleanarchitectureex.domen.api.MoviesRepository
 import com.example.moviescleanarchitectureex.domen.api.NamesInteractor
+import com.example.moviescleanarchitectureex.domen.api.NamesRepository
 import com.example.moviescleanarchitectureex.domen.impl.MoviesInteractorImpl
 import com.example.moviescleanarchitectureex.domen.impl.NamesInteracrorImpl
+import com.example.moviescleanarchitectureex.presentation.names.NamesViewModel
 import dagger.Binds
+import dagger.MapKey
 import dagger.Module
 import dagger.Provides
+import dagger.multibindings.IntoMap
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Inject
+import javax.inject.Provider
 import javax.inject.Singleton
+import kotlin.reflect.KClass
 
 @Module(
     includes = [BindModule::class, NetworkModule::class]
@@ -46,6 +57,16 @@ interface BindModule {
     fun bindsNetworkClient(retrofitNetworkClient: RetrofitNetworkClient): NetworkClient
     @Binds
     fun bindsNamesInteractor(namesInteractorImpl: NamesInteracrorImpl): NamesInteractor
+    @Binds
+    fun bindsNamesRepository(namesRepositoryImpl: NamesRepositoryImpl): NamesRepository
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(NamesViewModel::class)
+    fun bindMyViewModel(view: NamesViewModel): ViewModel
+
+    @Binds
+    fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
 
 }
 
@@ -65,6 +86,30 @@ class NetworkModule {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         return retrofit.create(IMDbApiService::class.java)
+    }
+}
+
+
+@MustBeDocumented
+@Target(
+    AnnotationTarget.FUNCTION,
+    AnnotationTarget.PROPERTY_GETTER,
+    AnnotationTarget.PROPERTY_SETTER
+)
+@Retention(AnnotationRetention.RUNTIME)
+@MapKey
+annotation class ViewModelKey(val value: KClass<out ViewModel>)
+
+@Singleton
+class ViewModelFactory @Inject constructor(
+    private val creators: Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>
+) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        val creator = creators[modelClass] ?: creators.entries.firstOrNull()
+
+            ?.value ?: throw IllegalArgumentException("unknown model class $modelClass")
+        return creator.get() as T
     }
 }
 

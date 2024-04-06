@@ -4,12 +4,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.example.moviescleanarchitectureex.domen.api.MoviesInteractor
 import com.example.moviescleanarchitectureex.domen.models.MovieDetails
 import com.example.moviescleanarchitectureex.ui.models.AboutState
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class AboutViewModel(
     private val movieId: String,
@@ -20,18 +23,19 @@ class AboutViewModel(
     fun observeState(): LiveData<AboutState> = stateLiveData
 
     init {
-        moviesInteractor.getMovieDetails(
-            movieId,
-            object : MoviesInteractor.MovieDetailsConsumer {
-                override fun consume(movieDetails: MovieDetails?, errorMessage: String?) {
-                    if (movieDetails != null) {
-                        stateLiveData.postValue(AboutState.Content(movieDetails))
-                    } else {
-                        stateLiveData.postValue(AboutState.Error(errorMessage ?: "Unknown error"))
-                    }
-                }
+        viewModelScope.launch {
+            moviesInteractor.getMovieDetails(movieId).collect { pair->
+                processResult(pair.first, pair.second)
             }
-        )
+        }
+    }
+
+    private fun processResult(movieDetails: MovieDetails?, errorMessage: String?) {
+        if (movieDetails != null) {
+            stateLiveData.postValue(AboutState.Content(movieDetails))
+        } else {
+            stateLiveData.postValue(AboutState.Error(errorMessage ?: "Unknown error"))
+        }
     }
 
 

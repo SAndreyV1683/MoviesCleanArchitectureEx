@@ -4,12 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.example.moviescleanarchitectureex.domen.api.MoviesInteractor
 import com.example.moviescleanarchitectureex.domen.models.MovieCast
-import com.example.moviescleanarchitectureex.presentation.about.AboutViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.launch
 
 class MoviesCastViewModel(
     private val movieId: String,
@@ -21,15 +22,19 @@ class MoviesCastViewModel(
     init {
         stateLiveData.postValue(MoviesCastState.Loading)
 
-        moviesInteractor.getMoviesCast(movieId, object: MoviesInteractor.MovieCastConsumer {
-            override fun consume(movieCast: MovieCast?, errorMessage: String?) {
-                if (movieCast != null) {
-                    stateLiveData.postValue(castToUiStateContent(movieCast))
-                } else {
-                    stateLiveData.postValue(MoviesCastState.Error(errorMessage ?: "Unknown error"))
-                }
+        viewModelScope.launch {
+            moviesInteractor.getMoviesCast(movieId).collect { pair ->
+                processResult(pair.first, pair.second)
             }
-        })
+        }
+    }
+
+    private fun processResult(movieCast: MovieCast?, errorMessage: String?) {
+        if (movieCast != null) {
+            stateLiveData.postValue(castToUiStateContent(movieCast))
+        } else {
+            stateLiveData.postValue(MoviesCastState.Error(errorMessage ?: "Unknown error"))
+        }
     }
 
     private fun castToUiStateContent(cast: MovieCast): MoviesCastState {

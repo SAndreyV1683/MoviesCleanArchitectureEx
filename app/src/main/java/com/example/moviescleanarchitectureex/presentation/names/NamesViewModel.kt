@@ -2,45 +2,44 @@ package com.example.moviescleanarchitectureex.presentation.names
 
 
 import android.app.Application
-import android.os.Handler
-import android.os.Looper
-import android.os.SystemClock
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.moviescleanarchitectureex.R
 import com.example.moviescleanarchitectureex.domen.api.NamesInteractor
 import com.example.moviescleanarchitectureex.domen.models.Person
 import com.example.moviescleanarchitectureex.presentation.SingleLiveEvent
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class NamesViewModel(
+class NamesViewModel @Inject constructor (
     private val application: Application,
     private val namesInteractor: NamesInteractor
 ) : AndroidViewModel(application) {
 
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private val SEARCH_REQUEST_TOKEN = Any()
-    }
 
-    class NamesViewModelFactory @Inject constructor(
-        private val application: Application,
-        private val namesInteractor: NamesInteractor
-    ): ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return NamesViewModel(
-                application,
-                namesInteractor
-            ) as T
+        fun getViewModelFactory(
+           namesInteractor: NamesInteractor
+        ): ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+
+                NamesViewModel(
+                    this[APPLICATION_KEY] as Application,
+                    namesInteractor,
+                )
+            }
         }
-
     }
-
-    private val handler = Handler(Looper.getMainLooper())
 
     private val stateLiveData = MutableLiveData<NamesState>()
     fun observeState(): LiveData<NamesState> = stateLiveData
@@ -50,9 +49,8 @@ class NamesViewModel(
 
     private var latestSearchText: String? = null
 
-    override fun onCleared() {
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-    }
+    private var searchJob: Job? = null
+
 
     fun searchDebounce(changedText: String) {
         if (latestSearchText == changedText) {
@@ -60,59 +58,57 @@ class NamesViewModel(
         }
 
         this.latestSearchText = changedText
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-
-        val searchRunnable = Runnable { searchRequest(changedText) }
-
-        val postTime = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
-        handler.postAtTime(
-            searchRunnable,
-            SEARCH_REQUEST_TOKEN,
-            postTime,
-        )
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_DELAY)
+            searchRequest(changedText)
+        }
     }
 
     private fun searchRequest(newSearchText: String) {
         if (newSearchText.isNotEmpty()) {
             renderState(NamesState.Loading)
 
-            namesInteractor.searchNames(newSearchText, object : NamesInteractor.NamesConsumer {
-                override fun consume(foundNames: List<Person>?, errorMessage: String?) {
-                    val persons = mutableListOf<Person>()
-                    if (foundNames != null) {
-                        persons.addAll(foundNames)
-                    }
-
-                    when {
-                        errorMessage != null -> {
-                            renderState(
-                                NamesState.Error(
-                                    message = application.getString(
-                                        R.string.something_went_wrong),
-                                )
-                            )
-                            showToast.postValue(errorMessage)
-                        }
-
-                        persons.isEmpty() -> {
-                            renderState(
-                                NamesState.Empty(
-                                    message = application.getString(R.string.nothing_found),
-                                )
-                            )
-                        }
-
-                        else -> {
-                            renderState(
-                                NamesState.Content(
-                                    persons = persons,
-                                )
-                            )
-                        }
-                    }
-
+            viewModelScope.launch {
+                namesInteractor.searchNames(newSearchText).collect { pair ->
+                    processResult(pair.first, pair.second)
                 }
-            })
+            }
+        }
+    }
+
+    private fun processResult(foundNames: List<Person>?, errorMessage: String?) {
+        val persons = mutableListOf<Person>()
+        if (foundNames != null) {
+            persons.addAll(foundNames)
+        }
+
+        when {
+            errorMessage != null -> {
+                renderState(
+                    NamesState.Error(
+                        message = application.getString(
+                            R.string.something_went_wrong),
+                    )
+                )
+                showToast.postValue(errorMessage)
+            }
+
+            persons.isEmpty() -> {
+                renderState(
+                    NamesState.Empty(
+                        message = application.getString(R.string.nothing_found),
+                    )
+                )
+            }
+
+            else -> {
+                renderState(
+                    NamesState.Content(
+                        persons = persons,
+                    )
+                )
+            }
         }
     }
 

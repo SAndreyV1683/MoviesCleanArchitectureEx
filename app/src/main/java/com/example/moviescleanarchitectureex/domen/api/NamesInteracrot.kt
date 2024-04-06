@@ -1,12 +1,11 @@
 package com.example.moviescleanarchitectureex.domen.api
 
 import com.example.moviescleanarchitectureex.domen.models.Person
+import kotlinx.coroutines.flow.Flow
 
 interface NamesInteractor {
 
-    fun searchNames(expression: String, consumer: NamesConsumer)
+    suspend fun searchNames(expression: String): Flow<Pair<List<Person>?, String?>>
 
-    interface NamesConsumer {
-        fun consume(foundNames: List<Person>?, errorMessage: String?)
-    }
+
 }

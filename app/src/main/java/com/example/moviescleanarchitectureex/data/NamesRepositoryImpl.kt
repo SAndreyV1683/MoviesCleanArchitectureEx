@@ -5,28 +5,31 @@ import com.example.moviescleanarchitectureex.data.dto.NamesSearchResponse
 import com.example.moviescleanarchitectureex.domen.api.NamesRepository
 import com.example.moviescleanarchitectureex.domen.models.Person
 import com.example.moviescleanarchitectureex.util.Resource
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class NamesRepositoryImpl @Inject constructor(private val networkClient: NetworkClient) : NamesRepository {
 
-    override fun searchNames(expression: String): Resource<List<Person>> {
+    override suspend fun searchNames(expression: String): Flow<Resource<List<Person>>> = flow {
         val response = networkClient.doRequest(NamesSearchRequest(expression))
-        return when (response.resultCode) {
+        when (response.resultCode) {
             -1 -> {
-                Resource.Error("Проверьте подключение к интернету")
+                emit(Resource.Error("Проверьте подключение к интернету"))
             }
             200 -> {
                 with(response as NamesSearchResponse) {
-                    Resource.Success(results.map {
+                    val data = Resource.Success(results.map {
                         Person(id = it.id,
                             name = it.title,
                             description = it.description,
                             photoUrl = it.image)
                     })
+                    emit(data)
                 }
             }
             else -> {
-                Resource.Error("Ошибка сервера")
+                emit(Resource.Error("Ошибка сервера"))
             }
         }
     }

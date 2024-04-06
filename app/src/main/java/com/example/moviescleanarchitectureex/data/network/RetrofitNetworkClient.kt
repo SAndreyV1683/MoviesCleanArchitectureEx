@@ -10,13 +10,15 @@ import com.example.moviescleanarchitectureex.data.dto.MovieDetailsRequest
 import com.example.moviescleanarchitectureex.data.dto.MoviesSearchRequest
 import com.example.moviescleanarchitectureex.data.dto.NamesSearchRequest
 import com.example.moviescleanarchitectureex.data.dto.Response
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class  RetrofitNetworkClient @Inject constructor(
     private val imDbApiService: IMDbApiService
 ): NetworkClient {
 
-    override fun doRequest(dto: Any): Response {
+    override suspend fun doRequest(dto: Any): Response {
         if (!isConnected()) {
             return Response().apply { resultCode = -1}
         }
@@ -29,27 +31,33 @@ class  RetrofitNetworkClient @Inject constructor(
             return Response().apply { resultCode = 400 }
         }
 
-        val response = when (dto) {
-            is NamesSearchRequest -> {
-                imDbApiService.searchNames(dto.expression).execute()
-            }
+        return withContext(Dispatchers.IO) {
+            try {
+                when (dto) {
+                    is NamesSearchRequest -> {
+                        val response = imDbApiService.searchNames(dto.expression)
+                        response.apply { resultCode = 200 }
+                    }
 
-            is MoviesSearchRequest -> {
-                imDbApiService.findMovies(dto.expression).execute()
-            }
+                    is MoviesSearchRequest -> {
+                        val response = imDbApiService.findMovies(dto.expression)
+                        response.apply { resultCode = 200 }
+                    }
 
-            is MovieDetailsRequest -> {
-                imDbApiService.getMovieDetails(dto.id).execute()
-            }
+                    is MovieDetailsRequest -> {
+                        val response = imDbApiService.getMovieDetails(dto.id)
+                        response.apply { resultCode = 200 }
+                    }
 
-            else -> {
-                imDbApiService.getFullCast((dto as MovieCastRequest).movieId).execute()
+                    else -> {
+                        val response = imDbApiService.getFullCast((dto as MovieCastRequest).movieId)
+                        response.apply { resultCode = 200 }
+                    }
+                }
+            } catch (e: Throwable) {
+                Response().apply { resultCode = 500 }
             }
         }
-
-        val body = response.body()
-        return body?.apply { resultCode = response.code() } ?: Response().apply { resultCode = response.code() }
-
     }
 
     private fun isConnected(): Boolean {
