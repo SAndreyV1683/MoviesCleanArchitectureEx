@@ -1,9 +1,12 @@
 package com.example.moviescleanarchitectureex.data
 
+import com.example.moviescleanarchitectureex.data.converters.MovieDbConvertor
+import com.example.moviescleanarchitectureex.data.db.AppDatabase
 import com.example.moviescleanarchitectureex.data.dto.MovieCastRequest
 import com.example.moviescleanarchitectureex.data.dto.MovieCastResponse
 import com.example.moviescleanarchitectureex.data.dto.MovieDetailsRequest
 import com.example.moviescleanarchitectureex.data.dto.MovieDetailsResponse
+import com.example.moviescleanarchitectureex.data.dto.MovieDto
 import com.example.moviescleanarchitectureex.data.dto.MoviesSearchRequest
 import com.example.moviescleanarchitectureex.data.dto.MoviesSearchResponse
 import com.example.moviescleanarchitectureex.data.localstorage.LocalStorage
@@ -19,7 +22,9 @@ import javax.inject.Inject
 
 class MoviesRepositoryImpl @Inject constructor (
     private val networkClient: NetworkClient,
-    private val localStorage: LocalStorage
+    private val localStorage: LocalStorage,
+    private val appDatabase: AppDatabase,
+    private val movieDbConvertor: MovieDbConvertor,
 ) : MoviesRepository {
     override suspend fun searchMovie(expression: String): Flow<Resource<List<Movie>>> = flow {
         val response = networkClient.doRequest(MoviesSearchRequest(expression))
@@ -31,11 +36,17 @@ class MoviesRepositoryImpl @Inject constructor (
                 val data = Resource.Success((response as MoviesSearchResponse).results.map {
                     Movie(it.id, it.resultType, it.image, it.title, it.description, stored.contains(it.id))
                 })
+                saveMovie(response.results)
                 emit(data)
             }
 
             else -> emit(Resource.Error("Ошибка сервера"))
         }
+    }
+
+    private suspend fun saveMovie(movies: List<MovieDto>) {
+        val movieEntities = movies.map { movie -> movieDbConvertor.map(movie) }
+        appDatabase.movieDao().insertMovies(movieEntities)
     }
 
     override fun addMovieToFavorites(movie: Movie) {

@@ -1,11 +1,17 @@
 package com.example.moviescleanarchitectureex.di
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.room.Room
+import com.example.moviescleanarchitectureex.MoviesApplication
+import com.example.moviescleanarchitectureex.data.HistoryRepositoryImpl
 
 import com.example.moviescleanarchitectureex.data.MoviesRepositoryImpl
 import com.example.moviescleanarchitectureex.data.NamesRepositoryImpl
 import com.example.moviescleanarchitectureex.data.NetworkClient
+import com.example.moviescleanarchitectureex.data.converters.MovieDbConvertor
+import com.example.moviescleanarchitectureex.data.db.AppDatabase
 import com.example.moviescleanarchitectureex.data.localstorage.LocalStorage
 import com.example.moviescleanarchitectureex.data.network.IMDbApiService
 import com.example.moviescleanarchitectureex.data.network.RetrofitNetworkClient
@@ -13,6 +19,9 @@ import com.example.moviescleanarchitectureex.domen.api.MoviesInteractor
 import com.example.moviescleanarchitectureex.domen.api.MoviesRepository
 import com.example.moviescleanarchitectureex.domen.api.NamesInteractor
 import com.example.moviescleanarchitectureex.domen.api.NamesRepository
+import com.example.moviescleanarchitectureex.domen.db.HistoryInteractor
+import com.example.moviescleanarchitectureex.domen.db.HistoryRepository
+import com.example.moviescleanarchitectureex.domen.impl.HistoryInteractorImpl
 import com.example.moviescleanarchitectureex.domen.impl.MoviesInteractorImpl
 import com.example.moviescleanarchitectureex.domen.impl.NamesInteracrorImpl
 import com.example.moviescleanarchitectureex.presentation.names.NamesViewModel
@@ -31,17 +40,21 @@ import javax.inject.Singleton
 import kotlin.reflect.KClass
 
 @Module(
-    includes = [BindModule::class, NetworkModule::class]
+    includes = [BindModule::class, NetworkModule::class, DataBaseModule::class]
 )
 class AppModule {
     @Provides
     fun provideMoviesRepository(
         networkClient: NetworkClient,
-        localStorage: LocalStorage
+        localStorage: LocalStorage,
+        appDatabase: AppDatabase,
+        movieDbConvertor: MovieDbConvertor
     ): MoviesRepository {
         return MoviesRepositoryImpl(
             networkClient,
-            localStorage
+            localStorage,
+            appDatabase,
+            movieDbConvertor
         )
     }
 
@@ -59,6 +72,10 @@ interface BindModule {
     fun bindsNamesInteractor(namesInteractorImpl: NamesInteracrorImpl): NamesInteractor
     @Binds
     fun bindsNamesRepository(namesRepositoryImpl: NamesRepositoryImpl): NamesRepository
+    @Binds
+    fun bindsHistoryRepository(historyRepositoryImpl: HistoryRepositoryImpl): HistoryRepository
+    @Binds
+    fun bindsHistoryInteractor(historyInteractorImpl: HistoryInteractorImpl): HistoryInteractor
 
     @Binds
     @IntoMap
@@ -86,6 +103,14 @@ class NetworkModule {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         return retrofit.create(IMDbApiService::class.java)
+    }
+}
+
+@Module
+class DataBaseModule {
+    @Provides
+    fun provideAppDataBase(): AppDatabase {
+        return Room.databaseBuilder(context = MoviesApplication.INSTANCE, AppDatabase::class.java, "database.db").build()
     }
 }
 

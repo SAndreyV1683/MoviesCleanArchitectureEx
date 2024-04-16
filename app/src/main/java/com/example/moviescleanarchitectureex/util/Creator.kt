@@ -17,7 +17,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object Creator {
-    private fun getMoviesRepository(context: Context): MoviesRepository {
+   /* private fun getMoviesRepository(context: Context): MoviesRepository {
         return MoviesRepositoryImpl(
             RetrofitNetworkClient(provideImdbService()),
             LocalStorage(context)
@@ -46,5 +46,5 @@ object Creator {
         imageUrl: String
     ): PosterPresenter {
         return PosterPresenter(posterView, imageUrl)
-    }
+    }*/
 }
