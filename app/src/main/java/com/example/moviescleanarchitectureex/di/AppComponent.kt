@@ -5,6 +5,7 @@ import com.example.moviescleanarchitectureex.presentation.movies.MoviesSearchVie
 import com.example.moviescleanarchitectureex.ui.about.AboutFragment
 import com.example.moviescleanarchitectureex.presentation.about.AboutViewModel
 import com.example.moviescleanarchitectureex.presentation.poster.PosterFragment
+import com.example.moviescleanarchitectureex.ui.history.HistoryFragment
 import com.example.moviescleanarchitectureex.ui.moviescast.MoviesCastFragment
 import com.example.moviescleanarchitectureex.ui.names.NamesFragment
 import com.example.moviescleanarchitectureex.ui.root.RootActivity
@@ -28,4 +29,5 @@ interface AppComponent {
     fun inject(moviesCastFragment: MoviesCastFragment)
     fun inject(rootActivity: RootActivity)
     fun inject(namesFragment: NamesFragment)
+    fun inject(historyFragment: HistoryFragment)
 }

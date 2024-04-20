@@ -9,32 +9,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.moviescleanarchitectureex.MoviesApplication
 import com.example.moviescleanarchitectureex.appComponent
 import com.example.moviescleanarchitectureex.databinding.FragmentNamesBinding
 import com.example.moviescleanarchitectureex.domen.api.NamesInteractor
 import com.example.moviescleanarchitectureex.domen.models.Person
-import com.example.moviescleanarchitectureex.presentation.movies.MoviesSearchViewModel
 import com.example.moviescleanarchitectureex.presentation.names.NamesState
 import com.example.moviescleanarchitectureex.presentation.names.NamesViewModel
-import com.example.moviescleanarchitectureex.presentation.names.NamesViewModel_Factory
 import javax.inject.Inject
 
 class NamesFragment : Fragment() {
 
-    //val viewModel: NamesViewModel by viewModels()
     lateinit var viewModel: NamesViewModel
     @Inject
     lateinit var namesInteractor: NamesInteractor
-
-
-    /*var viewModelFactory = NamesViewModel.getViewModelFactory(namesInteractor)
-
-    private val viewModel: NamesViewModel by viewModels { viewModelFactory }*/
-
 
     private val adapter = PersonsAdapter()
 
